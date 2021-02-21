@@ -6,7 +6,7 @@
 
     <groupId>com.moefrumkin</groupId>
     <artifactId>droplet</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>15</maven.compiler.source>
@@ -68,7 +68,7 @@
         <repository>
             <id>github</id>
             <name>GitHub moefrumkin Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/Moegf/droplet</url>
+            <url>https://maven.pkg.github.com/moefrumkin/droplet</url>
         </repository>
     </distributionManagement>
 
