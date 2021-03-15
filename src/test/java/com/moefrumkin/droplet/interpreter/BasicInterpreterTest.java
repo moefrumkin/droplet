@@ -37,7 +37,7 @@ public class BasicInterpreterTest {
     public void testRun() throws UnexpectedTokenTypeException, UnexpectedTokenException {
         SyntaxTree tree = new Parser(Token.tokenize(program)).parse();
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        Interpreter interpreter = new BasicInterpreter(outputStream);
+        Interpreter interpreter = new BasicInterpreter.Builder().output(outputStream).build();
         tree.interpret(interpreter);
         assertArrayEquals(new byte[]{'0', '1', '0', '1', '1', '2', '0'}, outputStream.toByteArray());
     }
