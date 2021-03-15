@@ -1,7 +1,7 @@
 package com.moefrumkin.droplet.interpreter.basicInterpreter;
 
-import com.moefrumkin.droplet.interpreter.basicInterpreter.stackframe.FunctionStackFrame;
 import com.moefrumkin.droplet.interpreter.basicInterpreter.exceptions.InterpreterOutputException;
+import com.moefrumkin.droplet.interpreter.basicInterpreter.stackframe.FunctionStackFrame;
 import com.moefrumkin.droplet.interpreter.basicInterpreter.stackframe.GlobalStackFrame;
 import com.moefrumkin.droplet.interpreter.basicInterpreter.stackframe.SimpleStackFrame;
 import com.moefrumkin.droplet.interpreter.basicInterpreter.stackframe.StackFrame;
@@ -11,10 +11,7 @@ import com.moefrumkin.droplet.parser.function.Function;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.*;
 
 /**
@@ -42,30 +39,52 @@ public class BasicInterpreter extends AbstractInterpreter {
             Map.entry(UnaryOperationExpression.Type.NEGATION, i -> -i),
             Map.entry(UnaryOperationExpression.Type.BOOLEAN_NEGATION, i -> DEFAULT_TRUTHINESS.test(i) ? DEFAULT_TRUE : DEFAULT_FALSE)
     );
+    private static final OutputStream DEFAULT_OUTPUT = System.out;
+    private static final Map<String, ToIntBiFunction<BasicInterpreter, List<Integer>>> DEFAULT_LIBRARY = Map.ofEntries(
+            Map.entry("print", (interpreter, args) -> { args.forEach(interpreter::print); return interpreter.returnValue; }),
+            Map.entry("println", (interpreter, args) -> { args.forEach(arg -> interpreter.print(arg,  '\n')); return interpreter.returnValue; })
+    );
+
+    private final int returnValue;
+    private final IntPredicate truthiness;
+    private final Map<BinaryOperationExpression.Type, IntBinaryOperator> binaryOperations;
+    private final Map<UnaryOperationExpression.Type, IntUnaryOperator> unaryOperations;
+    private final OutputStream output;
+    private final Map<String, ToIntBiFunction<BasicInterpreter, List<Integer>>> functions;
 
     private StackFrame frame;
-    private OutputStream output;
-    private static Map<String, ToIntFunction<List<Integer>>> functionLibrary;
 
-    public BasicInterpreter() {
+    private BasicInterpreter(Builder builder) {
+        this.returnValue = builder.returnValue;
+        this.truthiness = builder.truthiness;
+        this.binaryOperations = builder.binaryOperations;
+        this.unaryOperations = builder.unaryOperations;
+        this.output = builder.output;
+        this.functions = builder.functions;
+
         frame = new GlobalStackFrame();
-        output = System.out;
-
-        functionLibrary = Map.ofEntries(
-                Map.entry("print", args -> {
-                    args.forEach(this::print);
-                    return DEFAULT_RETURN;
-                }),
-                Map.entry("println", args -> {
-                    args.forEach(arg -> print(arg, '\n'));
-                    return DEFAULT_RETURN;
-                })
-        );
     }
 
-    public BasicInterpreter(OutputStream output) {
-        this();
-        this.output = output;
+
+
+    public static final class Builder {
+        private int returnValue = DEFAULT_RETURN;
+        private IntPredicate truthiness = DEFAULT_TRUTHINESS;
+        private Map<BinaryOperationExpression.Type, IntBinaryOperator> binaryOperations = DEFAULT_BINARY_OPERATIONS;
+        private Map<UnaryOperationExpression.Type, IntUnaryOperator> unaryOperations = DEFAULT_UNARY_OPERATIONS;
+        private OutputStream output = DEFAULT_OUTPUT;
+        private final Map<String, ToIntBiFunction<BasicInterpreter, List<Integer>>> functions = new HashMap<>(DEFAULT_LIBRARY);
+
+        public Builder() {}
+
+        public Builder returnValue(int newReturn) { returnValue = newReturn; return this; }
+        public Builder truthiness(IntPredicate newTruthiness) { truthiness = newTruthiness; return this; }
+        public Builder binaryOperations(Map<BinaryOperationExpression.Type, IntBinaryOperator> newOperations) { binaryOperations = newOperations; return this; }
+        public Builder unaryOperations(Map<UnaryOperationExpression.Type, IntUnaryOperator> newOperations) { this.unaryOperations = newOperations; return this; }
+        public Builder output(OutputStream newOutput) { this.output = newOutput; return this; }
+        public Builder addFunction(String name, ToIntBiFunction<BasicInterpreter, List<Integer>> function) { functions.put(name, function); return this; }
+
+        public BasicInterpreter build() { return new BasicInterpreter(this); }
     }
 
     private void pushFrame() {
@@ -96,7 +115,7 @@ public class BasicInterpreter extends AbstractInterpreter {
 
     @Override
     public boolean truthy(int value) {
-        return value != 0;
+        return truthiness.test(value);
     }
 
     @Override
@@ -121,12 +140,12 @@ public class BasicInterpreter extends AbstractInterpreter {
 
     @Override
     public IntBinaryOperator getBinaryOperator(BinaryOperationExpression.Type type) {
-        return DEFAULT_BINARY_OPERATIONS.get(type);
+        return binaryOperations.get(type);
     }
 
     @Override
     public IntUnaryOperator getUnaryOperator(UnaryOperationExpression.Type type) {
-        return DEFAULT_UNARY_OPERATIONS.get(type);
+        return unaryOperations.get(type);
     }
 
     @Override
@@ -166,6 +185,6 @@ public class BasicInterpreter extends AbstractInterpreter {
 
     @Override
     public Optional<ToIntFunction<List<Integer>>> getLibraryFunction(String name) {
-        return Optional.ofNullable(functionLibrary.get(name));
+        return Optional.ofNullable(functions.get(name)).map(function -> (args -> function.applyAsInt(this, args)));
     }
 }
