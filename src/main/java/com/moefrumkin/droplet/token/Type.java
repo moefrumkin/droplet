@@ -27,7 +27,11 @@ public enum Type {
     /**
      * Operators
      */
-    OPERATOR("==|!=|\\|\\||\\&\\&|!|[+\\-*<>=]");
+    OPERATOR("==|!=|\\|\\||\\&\\&|!|[+\\-*<>=]"),
+    /**
+     * Terminator
+     */
+    TERMINATOR("^$");
 
     private final String pattern;
 

@@ -78,7 +78,7 @@ public interface Expression extends SyntaxTree {
                     operatorStack.push(current);
                     //move parser ahead
                     parser.match(Type.OPERATOR);
-                } else if (OPERATOR_PRECEDENCE.get(current.getData()) < OPERATOR_PRECEDENCE.get(operatorStack.peek().getData())) {
+                } else if (OPERATOR_PRECEDENCE.get(current.getData()) <= OPERATOR_PRECEDENCE.get(operatorStack.peek().getData())) {
                     //the operator has a higher precedence(lower number), so push it onto the stack
                     operatorStack.push(current);
                     //move parser ahead
