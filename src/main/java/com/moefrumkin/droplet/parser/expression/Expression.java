@@ -132,8 +132,8 @@ public interface Expression extends SyntaxTree {
                         parser.incrementIndex();
                         dataStack.push(new EnclosedExpression(Expression.parse(parser)));
                         parser.match(Type.SPECIAL, ")");
+                        break;
                     }
-                    break;
                 default:
                     parsing = false;
             }
