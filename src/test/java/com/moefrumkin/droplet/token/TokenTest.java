@@ -18,6 +18,7 @@ public class TokenTest {
     private final Token assign = new Token(Type.OPERATOR, "=");
     private final Token five = new Token(Type.LITERAL, "5");
     private final Token semicolon = new Token(Type.SPECIAL, ";");
+    private final Token terminator = new Token(Type.TERMINATOR, "");
 
     private final List<Token> tokenized = Token.tokenize(program);
 
@@ -47,7 +48,7 @@ public class TokenTest {
     @Test
     public void tokenize() {
         assertEquals(List.of(
-            let, n, assign, five, semicolon
+            let, n, assign, five, semicolon, terminator
         ), tokenized);
     }
 }

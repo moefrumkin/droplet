@@ -42,6 +42,8 @@ public class Token {
             }
         }
 
+        tokens.add(new Token(Type.TERMINATOR, ""));
+
         return tokens;
     }
 

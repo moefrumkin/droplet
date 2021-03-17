@@ -10,4 +10,7 @@ public record EnclosedExpression(Expression expression) implements Expression {
     public int evaluate(Interpreter interpreter){
         return interpreter.interpret(this);
     }
+
+    @Override
+    public String toString() { return  "(" + expression + ")"; }
 }
