@@ -34,11 +34,12 @@ public interface Expression extends SyntaxTree {
     }
 
     Map<String, Integer> OPERATOR_PRECEDENCE = Map.ofEntries(
+            Map.entry("~", 2),
             Map.entry("++", 2),
             Map.entry("--", 2),
             Map.entry("*", 3),
             Map.entry("+", 4),
-            Map.entry("-", 5),
+            Map.entry("-", 4),
             Map.entry("<", 6),
             Map.entry(">", 6),
             Map.entry("==", 7),
@@ -47,7 +48,7 @@ public interface Expression extends SyntaxTree {
 
     );
 
-    Set<String> UNARY_OPERATORS = Set.of("!", "-", "++", "--");
+    Set<String> UNARY_OPERATORS = Set.of("!", "~", "++", "--");
     Set<String> BINARY_OPERATORS = Set.of("==", "!=", "||", "&&", "+", "-", "*", "=", "<", ">");
 
     /**
@@ -66,65 +67,81 @@ public interface Expression extends SyntaxTree {
 
         boolean parsing = true;
 
+        //if the first token is a negation
+        if (parser.currentToken().getData().equals("-"))
+            parser.replaceTokenAtOffset(0, new Token(Type.OPERATOR, "~"));
+
         while (parsing) {
             //switch depending on current token
             Token current = parser.currentToken();
-            if (current.matches(Type.LITERAL)) {
-                dataStack.push(new LiteralExpression(parser.match(Type.LITERAL)));
-            } else if (current.matches(Type.OPERATOR)) {
-                //switch depending on precedence
-                //check if operator stack is empty
-                if (operatorStack.isEmpty()) {
-                    operatorStack.push(current);
-                    //move parser ahead
-                    parser.match(Type.OPERATOR);
-                } else if (OPERATOR_PRECEDENCE.get(current.getData()) <= OPERATOR_PRECEDENCE.get(operatorStack.peek().getData())) {
-                    //the operator has a higher precedence(lower number), so push it onto the stack
-                    operatorStack.push(current);
-                    //move parser ahead
-                    parser.match(Type.OPERATOR);
-                } else {
-                    //the operator has a lower precedence, so reduce the stack with what is on the stack
-                    reduce(dataStack, operatorStack.pop());
-                    //push current onto the stack
-                    operatorStack.push(current);
-                    //more parse ahead
-                    parser.match(Type.OPERATOR);
-                }
-            } else if (current.matches(Type.IDENTIFIER)) {
-                // identifier use
-                Token identifier = parser.match(Type.IDENTIFIER);
-
-                if (parser.currentToken().matches(Type.SPECIAL, "(")) {
-                    // function call
-                    //match open paren
-                    parser.match(Type.SPECIAL, "(");
-                    List<Expression> arguments = new ArrayList<>();
-                    while (!parser.currentToken().matches(Type.SPECIAL, ")")) {
-                        arguments.add(Expression.parse(parser));
-                        // require a comma unless the current parameter is the final one in the list
-                        if (!parser.currentToken().matches(Type.SPECIAL, ")")) {
-                            parser.match(Type.SPECIAL, ",");
-                        }
+            switch (current.getType()) {
+                case LITERAL:
+                    dataStack.push(new LiteralExpression(parser.match(Type.LITERAL)));
+                    break;
+                case OPERATOR:
+                    //check for negation
+                    if (parser.tokenAtOffset(1).matches(Type.OPERATOR))
+                        parser.replaceTokenAtOffset(1, new Token(Type.OPERATOR, "~"));
+                    //switch depending on precedence
+                    //check if operator stack is empty
+                    if (operatorStack.isEmpty()) {
+                        operatorStack.push(current);
+                        //move parser ahead
+                        parser.match(Type.OPERATOR);
+                    } else if (OPERATOR_PRECEDENCE.get(current.getData()) <= OPERATOR_PRECEDENCE.get(operatorStack.peek().getData())) {
+                        //the operator has a higher precedence(lower number), so push it onto the stack
+                        operatorStack.push(current);
+                        //move parser ahead
+                        parser.match(Type.OPERATOR);
+                    } else {
+                        //the operator has a lower precedence, so reduce the stack with what is on the stack
+                        reduce(dataStack, operatorStack);
+                        //push current onto the stack
+                        operatorStack.push(current);
+                        //more parse ahead
+                        parser.match(Type.OPERATOR);
                     }
-                    // expect closing paren
-                    parser.match(Type.SPECIAL, ")");
-                    // add the function to the data stack
-                    dataStack.push(new FunctionCallExpression(identifier, arguments));
-                } else {
-                    // variable reference
-                    dataStack.push(new IdentifierExpression(identifier));
-                }
-            } else {
-                // end of expression reached
-                parsing = false;
-            }
+                    break;
+                case IDENTIFIER:
+                    // identifier use
+                    Token identifier = parser.match(Type.IDENTIFIER);
 
+                    if (parser.currentToken().matches(Type.SPECIAL, "(")) {
+                        // function call
+                        //match open paren
+                        parser.match(Type.SPECIAL, "(");
+                        List<Expression> arguments = new ArrayList<>();
+                        while (!parser.currentToken().matches(Type.SPECIAL, ")")) {
+                            arguments.add(Expression.parse(parser));
+                            // require a comma unless the current parameter is the final one in the list
+                            if (!parser.currentToken().matches(Type.SPECIAL, ")")) {
+                                parser.match(Type.SPECIAL, ",");
+                            }
+                        }
+                        // expect closing paren
+                        parser.match(Type.SPECIAL, ")");
+                        // add the function to the data stack
+                        dataStack.push(new FunctionCallExpression(identifier, arguments));
+                    } else {
+                        // variable reference
+                        dataStack.push(new IdentifierExpression(identifier));
+                    }
+                    break;
+                case SPECIAL:
+                    if (current.getData().equals("(")) {
+                        parser.incrementIndex();
+                        dataStack.push(new EnclosedExpression(Expression.parse(parser)));
+                        parser.match(Type.SPECIAL, ")");
+                    }
+                    break;
+                default:
+                    parsing = false;
+            }
         }
 
         //reduce the data stack until the op stack is empty
         while (!operatorStack.isEmpty()) {
-            reduce(dataStack, operatorStack.pop());
+            reduce(dataStack, operatorStack);
         }
 
         //return what is left on the data stack
@@ -135,25 +152,17 @@ public interface Expression extends SyntaxTree {
      * Reduces the data stack using the given operation
      *
      * @param dataStack The data stack
-     * @param operation The operation
+     * @param opStack   The operation stack
      */
-    private static void reduce(Deque<Expression> dataStack, Token operation) {
+    private static void reduce(Deque<Expression> dataStack, Deque<Token> opStack) {
+        //get the  current operation
+        Token operation = opStack.pop();
+
         //check stack length
         if (dataStack.isEmpty()) {
             throw new IllegalArgumentException("Cannot reduce an empty stack");
         } else {
-            //special case for token "-" which is both binary and unary
-            if (operation.matches(Type.OPERATOR, "-")) {
-                //unary case
-                if (dataStack.size() == 1) {
-                    dataStack.push(new UnaryOperationExpression(UnaryOperationExpression.typeFromString(operation.getData()), dataStack.pop()));
-                } else {
-                    //right and left must be gotten first, because leftmost element gets pushed further down the stack
-                    Expression right = dataStack.pop();
-                    Expression left = dataStack.pop();
-                    dataStack.push(new BinaryOperationExpression(BinaryOperationExpression.typeFromString(operation.getData()), left, right));
-                }
-            } else if (UNARY_OPERATORS.contains(operation.getData())) {
+            if (UNARY_OPERATORS.contains(operation.getData())) {
                 //current is a unary operator
                 dataStack.push(new UnaryOperationExpression(UnaryOperationExpression.typeFromString(operation.getData()), dataStack.pop()));
             } else if (BINARY_OPERATORS.contains(operation.getData())) {
@@ -166,4 +175,5 @@ public interface Expression extends SyntaxTree {
             }
         }
     }
+
 }

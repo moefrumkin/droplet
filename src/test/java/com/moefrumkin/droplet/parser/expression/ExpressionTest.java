@@ -57,4 +57,37 @@ public class ExpressionTest {
         assertEquals(negativeOne, Expression.parse(new Parser(Token.tokenize("- 1"))));
         assertEquals(oneMinusNegativeOne, Expression.parse(new Parser(Token.tokenize(negation))));
     }
+
+    @Test
+    public void testNegativeMultiplication() throws UnexpectedTokenTypeException, UnexpectedTokenException {
+        final String negativeMultiplication = "2 * - 3;";
+
+        final Expression two = LiteralExpression.from(2);
+        final Expression three = LiteralExpression.from(3);
+
+        final Expression expression = new BinaryOperationExpression(BinaryOperationExpression.Type.MULTIPLICATION, two, new UnaryOperationExpression(UnaryOperationExpression.Type.NEGATION, three));
+
+        assertEquals(expression, Expression.parse(new Parser(Token.tokenize(negativeMultiplication))));
+    }
+
+    @Test
+    public void testNestedExpression() throws UnexpectedTokenTypeException, UnexpectedTokenException {
+        final String nestedExpression = "- 5 * ( 3 - 4 );";
+
+        final Expression three = LiteralExpression.from(3);
+        final Expression four = LiteralExpression.from(4);
+        final Expression five =  LiteralExpression.from(5);
+
+        final Expression expression = new BinaryOperationExpression(
+                BinaryOperationExpression.Type.MULTIPLICATION,
+                new UnaryOperationExpression(UnaryOperationExpression.Type.NEGATION,  five),
+                new EnclosedExpression( new BinaryOperationExpression(
+                        BinaryOperationExpression.Type.SUBTRACTION,
+                        three,
+                        four
+                ))
+        );
+
+        assertEquals(expression, Expression.parse(new Parser(Token.tokenize(nestedExpression))));
+    }
 }

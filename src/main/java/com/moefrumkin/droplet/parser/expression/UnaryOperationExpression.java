@@ -11,6 +11,7 @@ public record UnaryOperationExpression(Type type, Expression operand) implements
 	
 	static final Map<String, Type> DEFAULT_TYPE_MAP = Map.ofEntries(
 				Map.entry("-", Type.NEGATION),
+				Map.entry("~", Type.NEGATION),
 				Map.entry("!", Type.BOOLEAN_NEGATION)
 			);
 	

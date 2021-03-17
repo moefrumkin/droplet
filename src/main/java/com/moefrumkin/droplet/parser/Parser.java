@@ -32,6 +32,13 @@ public class Parser {
     }
 
     /**
+     * Returns the token at the given offset from the current token
+     * @param offset the offset
+     * @return the {@link Token}
+     */
+    public Token tokenAtOffset(int offset) { return tokens.get(tokenIndex + offset); }
+
+    /**
      * Increments the index of the current token that is being looked at
      */
     public void incrementIndex() {
@@ -73,10 +80,20 @@ public class Parser {
 
     /**
      *
-     * @return True if and only if there are tokens left to parse
+     * @return True if and only if there are tokens left to parse including the current token
      */
     public boolean tokensLeft() {
         return tokenIndex < tokens.size();
+    }
+
+    /**
+     * Replace a token at a given offset from the current token
+     * @param offset the offset
+     * @param newToken the new token
+     * @return the token being replaced
+     */
+    public Token replaceTokenAtOffset(int offset, Token newToken) {
+        return tokens.set(tokenIndex + offset, newToken);
     }
 
     /**
@@ -89,9 +106,11 @@ public class Parser {
         //init empty list of functions
         List<Function> functions = new ArrayList<>();
 
-        while(tokensLeft()) {
+        while(!currentToken().matches(Type.TERMINATOR)) {
             functions.add(Function.parse(this));
         }
+
+        match(Type.TERMINATOR);
 
         return new FunctionList(functions);
     }
