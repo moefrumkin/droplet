@@ -21,8 +21,8 @@ jobs:
 
       - name: Configure Git user
         run: |
-          git config user.email "actions@github.com"
-          git config user.name "GitHub Actions"
+          git config user.email "moegf1@gmail.com"
+          git config user.name "Moe Frumkin"
 
       - name: Publish JAR
         run: mvn -B release:prepare release:perform
