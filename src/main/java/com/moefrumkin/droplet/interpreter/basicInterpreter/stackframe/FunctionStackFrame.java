@@ -15,6 +15,8 @@ public class FunctionStackFrame extends SimpleStackFrame {
 
     /**
      * Creates a function stack frame with the default return value
+     * @param superFrame the parent stack frame
+     * @param defaultReturn the starting return value of the stack frame
      */
     public FunctionStackFrame(StackFrame superFrame, int defaultReturn) {
         super(superFrame);
@@ -23,6 +25,12 @@ public class FunctionStackFrame extends SimpleStackFrame {
         toReturn = false;
     }
 
+    /**
+     * Creates a function stack frame with the default return value and name
+     * @param superFrame the parent stack frame
+     * @param defaultReturn the starting return value of the stack frame
+     * @param name the name of the stack frame
+     */
     public FunctionStackFrame(StackFrame superFrame, int defaultReturn, String name) {
         this(superFrame, defaultReturn);
         this.name = name;
@@ -51,11 +59,13 @@ public class FunctionStackFrame extends SimpleStackFrame {
 
     @Override
     public boolean equals(Object o) {
-        if(o instanceof FunctionStackFrame other)
+        if(o instanceof FunctionStackFrame) {
+            FunctionStackFrame other = (FunctionStackFrame) o;
             return name.equals(other.name)
-                && returnValue == other.returnValue
-                && toReturn == other.toReturn
-                && superFrame.equals(other.superFrame);
+                    && returnValue == other.returnValue
+                    && toReturn == other.toReturn
+                    && superFrame.equals(other.superFrame);
+        }
         else
             return false;
     }

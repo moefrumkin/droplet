@@ -23,16 +23,49 @@ public record BinaryOperationExpression(Type type, Expression left, Expression r
             Map.entry(">", Type.GREATER)
     );
 
+    /**
+     * The types of binary operations
+     */
     public enum Type {
+        /**
+         * Variable assignment
+         */
         ASSIGNMENT,
+        /**
+         * Integer addition
+         */
         ADDITION,
+        /**
+         * Integer subtraction
+         */
         SUBTRACTION,
+        /**
+         * Integer multiplication
+         */
         MULTIPLICATION,
+        /**
+         * Boolean or
+         */
         OR,
+        /**
+         * Boolean and
+         */
         AND,
+        /**
+         * Integer equality
+         */
         EQUALS,
+        /**
+         * Integer inequality
+         */
         @SuppressWarnings("SpellCheckingInspection") NOTEQUALS,
+        /**
+         * Less than
+         */
         LESS,
+        /**
+         * Greater than
+         */
         GREATER
     }
 

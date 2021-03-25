@@ -11,7 +11,13 @@ import java.util.Optional;
  */
 public class SimpleStackFrame implements StackFrame {
 
+    /**
+     * the variables defined in the stack frame's scope
+     */
     protected final Map<String, Integer> variableMap;
+    /**
+     * the parent frame of the stack frame
+     */
     protected final StackFrame superFrame;
 
     /**
@@ -133,7 +139,8 @@ public class SimpleStackFrame implements StackFrame {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof SimpleStackFrame other) {
+        if (o instanceof SimpleStackFrame) {
+            SimpleStackFrame other = (SimpleStackFrame) o;
             return other.variableMap.equals(variableMap)
                     && other.superFrame.equals(superFrame);
         }

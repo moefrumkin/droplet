@@ -8,6 +8,11 @@ import java.util.Optional;
  * This interface represents a <a href="https://en.wikipedia.org/wiki/Call_stack">call stack</a>
  */
 public interface StackFrame {
+
+    /**
+     * adds a function to the stack frame
+     * @param function the function to add
+     */
     void addFunction(Function function);
 
     /**

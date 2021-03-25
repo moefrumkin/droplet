@@ -14,13 +14,26 @@ public record UnaryOperationExpression(Type type, Expression operand) implements
 				Map.entry("~", Type.NEGATION),
 				Map.entry("!", Type.BOOLEAN_NEGATION)
 			);
-	
+
+	/**
+	 * The types of unary operations
+	 */
 	public enum Type {
+		/**
+		 * Integer negation
+		 */
 		NEGATION,
+		/**
+		 * Boolean negation
+		 */
 		BOOLEAN_NEGATION
     }
-	
-	//convenience method to convert from String to op type
+
+	/**
+	 * A method that converts from a string to an operation type
+	 * @param string the string
+	 * @return the operation type
+	 */
 	public static Type typeFromString(String string) {
 		return DEFAULT_TYPE_MAP.get(string);
 	}

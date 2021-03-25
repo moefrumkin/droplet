@@ -66,7 +66,9 @@ public class BasicInterpreter extends AbstractInterpreter {
     }
 
 
-
+    /**
+     * A builder class for {@link BasicInterpreter}
+     */
     public static final class Builder {
         private int returnValue = DEFAULT_RETURN;
         private IntPredicate truthiness = DEFAULT_TRUTHINESS;
@@ -75,15 +77,58 @@ public class BasicInterpreter extends AbstractInterpreter {
         private OutputStream output = DEFAULT_OUTPUT;
         private final Map<String, ToIntBiFunction<BasicInterpreter, List<Integer>>> functions = new HashMap<>(DEFAULT_LIBRARY);
 
+        /**
+         * Creates a new builder object with the default settings
+         */
         public Builder() {}
 
+        /**
+         * Sets the default return value of a function
+         * @param newReturn the default return value
+         * @return the builder object
+         */
         public Builder returnValue(int newReturn) { returnValue = newReturn; return this; }
+
+        /**
+         * Sets the predicate that determines whether a number is truthy
+         * @param newTruthiness the predicate
+         * @return the builder object
+         */
         public Builder truthiness(IntPredicate newTruthiness) { truthiness = newTruthiness; return this; }
+
+        /**
+         * Determines how binary operations are evaluated
+         * @param newOperations the binary operations
+         * @return the builder object
+         */
         public Builder binaryOperations(Map<BinaryOperationExpression.Type, IntBinaryOperator> newOperations) { binaryOperations = newOperations; return this; }
+
+        /**
+         * Determines how unary operations are evaluated
+         * @param newOperations the unary operations
+         * @return the builder object
+         */
         public Builder unaryOperations(Map<UnaryOperationExpression.Type, IntUnaryOperator> newOperations) { this.unaryOperations = newOperations; return this; }
+
+        /**
+         * Sets the output stream for library functions
+         * @param newOutput the output stream
+         * @return the builder object
+         */
         public Builder output(OutputStream newOutput) { this.output = newOutput; return this; }
+
+        /**
+         * Adds a function to the library
+         * @param name the name of the function
+         * @param function the function
+         * @return the builder object
+         */
         public Builder addFunction(String name, ToIntBiFunction<BasicInterpreter, List<Integer>> function) { functions.put(name, function); return this; }
 
+        /**
+         * Creates an interpreter from the builder object
+         * @return an interpreter
+         */
         public BasicInterpreter build() { return new BasicInterpreter(this); }
     }
 

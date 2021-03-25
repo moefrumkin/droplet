@@ -17,8 +17,18 @@ import java.util.Optional;
  */
 public record DeclarationStatement(Token identifier, Expression value) implements Statement {
 
+    /**
+     * The default value if none is specified
+     */
     public static Expression DEFAULT_VALUE = new LiteralExpression(new Token(Type.LITERAL, "0"));
 
+    /**
+     * Parses a declaration statement
+     * @param parser the parser
+     * @return the statement
+     * @throws UnexpectedTokenException if an unexpected token is seen
+     * @throws UnexpectedTokenTypeException if an unexpected token type is seen
+     */
     public static DeclarationStatement parse(Parser parser) throws UnexpectedTokenException, UnexpectedTokenTypeException {
         //expect keyword let
         parser.match(Type.KEYWORD, "let");
@@ -46,6 +56,10 @@ public record DeclarationStatement(Token identifier, Expression value) implement
         return new DeclarationStatement(identifier);
     }
 
+    /**
+     * Creates a declaration statement with the default value
+     * @param identifier the identifier token
+     */
     public DeclarationStatement(Token identifier) {
         this(identifier, DEFAULT_VALUE);
     }

@@ -14,6 +14,9 @@ import java.util.function.IntUnaryOperator;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
+/**
+ * An abstract interpreter
+ */
 public abstract class AbstractInterpreter implements Interpreter {
 
     /**
@@ -190,8 +193,8 @@ public abstract class AbstractInterpreter implements Interpreter {
         int right = expression.right().evaluate(this);
 
         if(expression.type() == BinaryOperationExpression.Type.ASSIGNMENT) {
-            if (expression.left() instanceof IdentifierExpression identifierExpression) {
-                assign(identifierExpression.getIdentifier().getData(), right);
+            if (expression.left() instanceof IdentifierExpression) {
+                assign(((IdentifierExpression) expression.left()).getIdentifier().getData(), right);
             } else {
                 throw new RuntimeException("Left hand of an assignment must be an identifier");
             }

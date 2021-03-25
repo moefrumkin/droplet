@@ -33,6 +33,9 @@ public interface Expression extends SyntaxTree {
         evaluate(interpreter);
     }
 
+    /**
+     * The map determining the precedence of operations
+     */
     Map<String, Integer> OPERATOR_PRECEDENCE = Map.ofEntries(
             Map.entry("~", 2),
             Map.entry("++", 2),
@@ -48,18 +51,24 @@ public interface Expression extends SyntaxTree {
 
     );
 
+    /**
+     * The valid unary operations
+     */
     Set<String> UNARY_OPERATORS = Set.of("!", "~", "++", "--");
+
+    /**
+     * The valid binary operations
+     */
     Set<String> BINARY_OPERATORS = Set.of("==", "!=", "||", "&&", "+", "-", "*", "=", "<", ">");
 
     /**
      * This function parses an expression.
+     * The grammar of droplet expressions is ambiguous, so the <a href="https://en.wikipedia.org/wiki/Shunting-yard_algorithm"> Shunting-yard algorithm </a> is used to determine the order of operations.
      *
      * @param parser The parser to parse
      * @return The expression produced
      * @throws UnexpectedTokenTypeException If a token has an unexpected type
-     * @throws UnexpectedTokenException     If a token is unexpected
-     * @implNote The grammar of droplet expressions is ambiguous, so the <a href="https://en.wikipedia.org/wiki/Shunting-yard_algorithm"> Shunting-yard algorithm </a> is used to determine the order of operations.
-     */
+     * @throws UnexpectedTokenException     If a token is unexpected*/
     static Expression parse(Parser parser) throws UnexpectedTokenTypeException, UnexpectedTokenException {
         //initialize stacks for shunting yard algorithm
         Deque<Expression> dataStack = new ArrayDeque<>();

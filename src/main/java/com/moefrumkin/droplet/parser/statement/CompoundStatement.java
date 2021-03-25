@@ -14,6 +14,13 @@ import java.util.List;
  */
 public record CompoundStatement(List<Statement> statements) implements Statement {
 
+    /**
+     * Parses a compound statement from a parser
+     * @param parser the parser
+     * @return The compound statement
+     * @throws UnexpectedTokenException if an unexpected token is seen
+     * @throws UnexpectedTokenTypeException if an unexpected token type is seen
+     */
     public static CompoundStatement parse(Parser parser) throws UnexpectedTokenException, UnexpectedTokenTypeException {
         //expect and opening bracket
         parser.match(Type.SPECIAL, "{");

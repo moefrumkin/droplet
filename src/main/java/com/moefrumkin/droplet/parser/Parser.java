@@ -18,6 +18,10 @@ public class Parser {
     private final List<Token> tokens;
     private int tokenIndex;
 
+    /**
+     * Creates a new parser with the given tokens
+     * @param tokens the tokens
+     */
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
         tokenIndex = 0;

@@ -16,12 +16,19 @@ public class GlobalStackFrame implements StackFrame {
     private boolean toReturn;
     private int exitCode;
 
+    /**
+     * Creates a new global stack frame
+     */
     public GlobalStackFrame() {
         variableMap = new HashMap<>();
         functionMap = new HashMap<>();
         toReturn = false;
     }
 
+    /**
+     * create a new global stack frame with a starting exit code
+     * @param defaultExitCode the starting exit code
+     */
     public GlobalStackFrame(int defaultExitCode) {
         this();
         exitCode = defaultExitCode;
@@ -98,11 +105,13 @@ public class GlobalStackFrame implements StackFrame {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof GlobalStackFrame other)
+        if (o instanceof GlobalStackFrame) {
+            GlobalStackFrame other = (GlobalStackFrame) o;
             return variableMap.equals(other.variableMap)
                     && functionMap.equals(other.functionMap)
                     && toReturn == other.toReturn
                     && exitCode == other.exitCode;
+        }
         else
             return false;
     }

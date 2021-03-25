@@ -4,6 +4,9 @@ import com.moefrumkin.droplet.interpreter.Interpreter;
 import com.moefrumkin.droplet.token.Token;
 import com.moefrumkin.droplet.token.Type;
 
+/**
+ * Represents a numeric literal
+ */
 public record LiteralExpression(Token literal) implements Expression {
 
 	/**
