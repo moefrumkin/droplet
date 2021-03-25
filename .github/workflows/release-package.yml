@@ -19,8 +19,10 @@ jobs:
           server-id: github
           settings-path: ${{ github.workspace }}
 
-      - name: Build with Maven
-        run: mvn -B package --file pom.xml
+      - name: Configure Git user
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
 
       - name: Publish JAR
         run: mvn -B release:prepare release:perform
