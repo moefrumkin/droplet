@@ -71,7 +71,8 @@
     </reporting>
 
     <scm>
-        <connection>scm:git:git@github.com:moefrumkin/droplet.git</connection>
+        <connection>scm:git:ssh://git@github.com:moefrumkin/droplet.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:moefrumkin/droplet.git</developerConnection>
     </scm>
 
     <distributionManagement>
