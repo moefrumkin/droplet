@@ -9,8 +9,6 @@ import com.moefrumkin.droplet.token.Type;
 
 /**
  * Interface that represents a statement.
- *
- * @implNote Because a statement type is fully determined by the first token a if else statement can be used when determining the type of statement.
  */
 public interface Statement extends SyntaxTree {
 	/**
