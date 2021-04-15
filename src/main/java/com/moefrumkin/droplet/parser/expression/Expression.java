@@ -77,8 +77,12 @@ public interface Expression extends SyntaxTree {
         boolean parsing = true;
 
         //if the first token is a negation
-        if (parser.currentToken().getData().equals("-"))
-            parser.replaceTokenAtOffset(0, new Token(Type.OPERATOR, "~"));
+        if (parser.currentToken().getData().equals("-")) {
+            //advance the parse
+            Token current = parser.match(Type.OPERATOR, "-");
+            dataStack.push(Expression.parse(parser));
+            reduceUnary(dataStack, current);
+        }
 
         while (parsing) {
             //switch depending on current token
@@ -88,28 +92,10 @@ public interface Expression extends SyntaxTree {
                     dataStack.push(new LiteralExpression(parser.match(Type.LITERAL)));
                     break;
                 case OPERATOR:
+                    processOperator(parser, dataStack, operatorStack, current);
                     //check for negation
-                    if (parser.tokenAtOffset(1).matches(Type.OPERATOR))
-                        parser.replaceTokenAtOffset(1, new Token(Type.OPERATOR, "~"));
-                    //switch depending on precedence
-                    //check if operator stack is empty
-                    if (operatorStack.isEmpty()) {
-                        operatorStack.push(current);
-                        //move parser ahead
-                        parser.match(Type.OPERATOR);
-                    } else if (OPERATOR_PRECEDENCE.get(current.getData()) <= OPERATOR_PRECEDENCE.get(operatorStack.peek().getData())) {
-                        //the operator has a higher precedence(lower number), so push it onto the stack
-                        operatorStack.push(current);
-                        //move parser ahead
-                        parser.match(Type.OPERATOR);
-                    } else {
-                        //the operator has a lower precedence, so reduce the stack with what is on the stack
-                        reduce(dataStack, operatorStack);
-                        //push current onto the stack
-                        operatorStack.push(current);
-                        //more parse ahead
-                        parser.match(Type.OPERATOR);
-                    }
+                    if(parser.currentToken().matches(Type.OPERATOR, "-"))
+                        reduceUnary(dataStack, parser.currentToken());
                     break;
                 case IDENTIFIER:
                     // identifier use
@@ -150,7 +136,7 @@ public interface Expression extends SyntaxTree {
 
         //reduce the data stack until the op stack is empty
         while (!operatorStack.isEmpty()) {
-            reduce(dataStack, operatorStack);
+            reduce(dataStack, operatorStack.pop());
         }
 
         //return what is left on the data stack
@@ -158,31 +144,78 @@ public interface Expression extends SyntaxTree {
     }
 
     /**
+     * Processes and operator using the shunting yard algorithm to determine the order
+     * @param parser the parser
+     * @param dataStack the data stack
+     * @param operatorStack the operator stack
+     * @param operator the operation
+     * @throws UnexpectedTokenTypeException If an unexpected token type is seen
+     */
+    private static void processOperator(Parser parser, Deque<Expression> dataStack, Deque<Token> operatorStack, Token operator) throws UnexpectedTokenTypeException {
+        //switch depending on precedence
+        //check if operator stack is empty
+        if (operatorStack.isEmpty()) {
+            operatorStack.push(operator);
+            //move parser ahead
+            parser.match(Type.OPERATOR);
+        } else if (OPERATOR_PRECEDENCE.get(operator.getData()) <= OPERATOR_PRECEDENCE.get(operatorStack.peek().getData())) {
+            //the operator has a higher precedence(lower number), so push it onto the stack
+            operatorStack.push(operator);
+            //move parser ahead
+            parser.match(Type.OPERATOR);
+        } else {
+            //the operator has a lower precedence, so reduce the stack with what is on the stack
+            reduce(dataStack, operatorStack.pop());
+            //push current onto the stack
+            operatorStack.push(operator);
+            //more parse ahead
+            parser.match(Type.OPERATOR);
+        }
+        //check for negation
+    }
+
+    /**
      * Reduces the data stack using the given operation
      *
      * @param dataStack The data stack
-     * @param opStack   The operation stack
+     * @param operation The operation
      */
-    private static void reduce(Deque<Expression> dataStack, Deque<Token> opStack) {
-        //get the  current operation
-        Token operation = opStack.pop();
+    private static void reduce(Deque<Expression> dataStack, Token operation) {
 
         //check stack length
         if (dataStack.isEmpty()) {
             throw new IllegalArgumentException("Cannot reduce an empty stack");
         } else {
-            if (UNARY_OPERATORS.contains(operation.getData())) {
-                //current is a unary operator
-                dataStack.push(new UnaryOperationExpression(UnaryOperationExpression.typeFromString(operation.getData()), dataStack.pop()));
-            } else if (BINARY_OPERATORS.contains(operation.getData())) {
-                //right and left must be gotten first, because leftmost element gets pushed further down the stack
-                Expression right = dataStack.pop();
-                Expression left = dataStack.pop();
-                dataStack.push(new BinaryOperationExpression(BinaryOperationExpression.typeFromString(operation.getData()), left, right));
-            } else {
+            if (UNARY_OPERATORS.contains(operation.getData()))
+                reduceUnary(dataStack, operation);
+            else if (BINARY_OPERATORS.contains(operation.getData()))
+                reduceBinary(dataStack, operation);
+            else
                 throw new IllegalArgumentException("Operation type " + operation + " is not recognized");
-            }
         }
+    }
+
+    /**
+     * Reduces the data stack given a binary operation
+     *
+     * @param dataStack the data stack
+     * @param operation the operation
+     */
+    private static void reduceBinary(Deque<Expression> dataStack, Token operation) {
+        //right and left must be gotten first, because leftmost element gets pushed further down the stack
+        Expression right = dataStack.pop();
+        Expression left = dataStack.pop();
+        dataStack.push(new BinaryOperationExpression(BinaryOperationExpression.typeFromString(operation.getData()), left, right));
+    }
+
+    /**
+     * Reduces the data stack given a unary operation
+     *
+     * @param dataStack the data stack
+     * @param operation the operation
+     */
+    private static void reduceUnary(Deque<Expression> dataStack, Token operation) {
+        dataStack.push(new UnaryOperationExpression(UnaryOperationExpression.typeFromString(operation.getData()), dataStack.pop()));
     }
 
 }

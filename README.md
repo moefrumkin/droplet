@@ -33,7 +33,7 @@ A Token is the smallest lexical unit Droplet. There are seven different types of
 - ```IDENTIFIER```: Words which are not KEYWORDs which represent the names of variables and functions
 - ```LITERAL```: A combination of digits which represent a predetermined numerical value
 - ```SPECIAL```: The characters ```{```,```}```,```(```,```)```,```;```, and ```,``` which group and delimit structures
-- ```OPERATOR```: The strings ```==```,```!=,```,```||```,```&&```,```!```,```+```,```-```,```*```,```<```,```>```,```=```, and ```~``` which represent arithmetic and boolean operations
+- ```OPERATOR```: The strings ```==```,```!=,```,```||```,```&&```,```!```,```+```,```-```,```*```,```<```,```>```, and ```=``` which represent arithmetic and boolean operations
 - ```TERMINATOR```: Token that marks the end of the program
 
 ### Functions
