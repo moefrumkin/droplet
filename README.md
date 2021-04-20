@@ -74,6 +74,45 @@ There are ? types of expressions in Droplet. They can be represented by the foll
 
 There are three packages provided by the API, ```interpreter```, ```parser```, and ```token```, which contains classes and methods that run programs, parse programs, and tokenize programs, respectively.
 
+To run a program, the string must be token and then parsed.
+
+```java
+import com.moefrumkin.droplet.interpreter.basicInterpreter.BasicInterpreter;
+import com.moefrumkin.droplet.token.Token;
+import com.moefrumkin.droplet.parser.Parser;
+
+class BareMinimum {
+  public static void main(String[] args) {
+    String program = "";
+    List<Token> tokenization = Token.tokenize(program);
+    Parser parser = new Parser(tokenization);
+    parser.parse().interpret(new BasicInterpreter());
+  }
+}
+```
+
+### Example Programs
+
+#### Printing a number
+```
+def main() {
+  print(0);
+}
+```
+
+#### Factorial
+```
+def main() {
+  print(factorial(5));
+}
+
+def factorial(n) {
+  if(n == 0)
+    return 1;
+  return n * factorial(n - 1);
+}
+```
+
 ## Contributing
 
 Pull Requests and Issues are welcome.
