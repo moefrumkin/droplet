@@ -11,6 +11,7 @@ It is designed to be minimalistic and easy to understand.
     - [Statements](#Statements)
     - [Expressions](#Expressions)
 - [Usage](#Usage)
+- [Acknowledgements](#Acknowledgements)
 - [Contributing](#Contributing)
     
     
@@ -112,6 +113,10 @@ def factorial(n) {
   return n * factorial(n - 1);
 }
 ```
+
+## Acknowledgements
+
+I relied heavily on online resources to teach myself the necessary prerequisites for this project. I was particulary inspired by [this video](https://www.youtube.com/watch?v=eF9qWbuQLuw&t=1s) and based the Droplet grammar off of [this diagram](https://raw.githubusercontent.com/bisqwit/compiler_series/master/ep1/jit-conj-parser1.png). I used both [the wikipedia page](https://en.wikipedia.org/wiki/Shunting_yard_algorithm) and [this page](https://aquarchitect.github.io/swift-algorithm-club/Shunting%20Yard/) to understand and implement the shunting-yard algorithm. All the code is my own.
 
 ## Contributing
 
