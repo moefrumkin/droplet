@@ -116,7 +116,7 @@ def factorial(n) {
 
 ## Acknowledgements
 
-I relied heavily on online resources to teach myself the necessary prerequisites for this project. I was particulary inspired by [this video](https://www.youtube.com/watch?v=eF9qWbuQLuw&t=1s) and based the Droplet grammar off of [this diagram](https://raw.githubusercontent.com/bisqwit/compiler_series/master/ep1/jit-conj-parser1.png). I used both [the wikipedia page](https://en.wikipedia.org/wiki/Shunting_yard_algorithm) and [this page](https://aquarchitect.github.io/swift-algorithm-club/Shunting%20Yard/) to understand and implement the shunting-yard algorithm. All the code is my own.
+I relied heavily on online resources to teach myself the necessary prerequisites for this project. I was particulary inspired by [this video](https://www.youtube.com/watch?v=eF9qWbuQLuw&t=1s) and based the Droplet grammar off of [this diagram](https://raw.githubusercontent.com/bisqwit/compiler_series/master/ep1/jit-conj-parser1.png). I used both [the wikipedia page](https://en.wikipedia.org/wiki/Shunting_yard_algorithm) and [this page](https://aquarchitect.github.io/swift-algorithm-club/Shunting%20Yard/) to understand and implement the shunting-yard algorithm. I relied particularly heavily on the Java documenation and online examples to implement the lexer using Java's [Matcher class](https://docs.oracle.com/javase/7/docs/api/java/util/regex/Matcher.html).
 
 ## Contributing
 
