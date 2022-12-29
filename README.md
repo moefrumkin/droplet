@@ -17,16 +17,16 @@ Droplet is a high level interpreted programming language designed to be minimali
 
 ## Specification
 
-A program in Droplet has three main types of structures, [Functions](#Functions), [Statements](#Statements), and [Expressions](#Expressions), which are built out of each other and [Tokens](#Tokens).
+A program in Droplet has three main types of structures: [Functions](#Functions), [Statements](#Statements), and [Expressions](#Expressions), which are built out of each other and [Tokens](#Tokens).
 
-A program can either be a single function, or a list of functions.
+A program can either be a single function or a list of functions.
 The program entry point must be a parameterless function.
 In the case of a single function program, the single function is treated as the entry point.
 Otherwise, there must be a function called ```main``` which is treated as the entry point.
 
 ### Tokens
 
-A Token is the smallest lexical unit Droplet. There are seven different types of Tokens in Droplet:
+A token is the smallest lexical unit in Droplet. There are seven different types of tokens in Droplet:
 
 - ```WHITESPACE```: Spaces, tabs, or newline symbols which are ignored during parsing
 - ```KEYWORD```: The words ```return```, ```while```,```if```,```let```, and```def```, which introduce certain structures
@@ -40,13 +40,13 @@ A Token is the smallest lexical unit Droplet. There are seven different types of
 A function in Droplet represents a subroutine that can be called from any part of the program.
 Functions must be defined at the top level.
 
-A ```Function``` can be defined by the following context free grammar:
+A ```Function``` is defined by the following context-free grammar:
 - ```FUNCTION -> def IDENTIFIER( IDENTIFIER* ) STATEMENT```
 
 ### Statements
 
 A statement in Droplet represents a syntactic structure that effects the control flow of the program.
-There are six types of statements in Droplet. They can be represented by the following context free grammar:
+There are six types of statements in Droplet. They can be represented by the following context-free grammar:
 
 - ```STATEMENT -> e | CompoundStatement | ConditionalStatement | DeclarationStatement | ExpressionStatement | LoopStatement | ReturnStatement```
 - ```CompoundStatement -> { STATEMENT* }```
@@ -58,7 +58,7 @@ There are six types of statements in Droplet. They can be represented by the fol
 
 ### Expressions
 An expression in Droplet represents a syntactic structure that can be evaluated to an integer.
-There are ? types of expressions in Droplet. They can be represented by the following context free grammar:
+There are 6 types of expressions in Droplet. They can be represented by the following context-free grammar:
 
 - ```Expression -> BinaryOperationExpression | EnclosedExpression | FunctionCallExpression | IdentifierExpression | LiteralExpression | UnaryOperationExpression```
 - ```BinaryOperationExpression -> Expression BinaryOperation Expression```
@@ -68,13 +68,13 @@ There are ? types of expressions in Droplet. They can be represented by the foll
 - ```IdentifierExpression -> IDENTIFIER```
 - ```LiteralExpression -> LITERAL```
 - ```BinaryOperation -> + | - | * | || | && | == | != | < | >```
-- ```UnaryOperationExpression -> - | ! | ++ | --```
+- ```UnaryOperation -> - | ! | ++ | --```
 
 ## Usage
 
-There are three packages provided by the API, ```interpreter```, ```parser```, and ```token```, which contains classes and methods that run programs, parse programs, and tokenize programs, respectively.
+There are three packages provided by the API: ```interpreter```, ```parser```, and ```token```, which contains classes and methods that run programs, parse programs, and tokenize programs, respectively.
 
-To run a program, the string must be token and then parsed.
+To run a program, the string must be tokenized and then parsed.
 
 ```java
 import com.moefrumkin.droplet.interpreter.basicInterpreter.BasicInterpreter;
