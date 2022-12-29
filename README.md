@@ -1,7 +1,6 @@
 # Droplet
 
-Droplet is a high level interpreted programming language designed for educational purposes.
-It is designed to be minimalistic and easy to understand.
+Droplet is a high level interpreted programming language designed to be minimalistic and easy to understand.
 
 ## Table of Contents
 
